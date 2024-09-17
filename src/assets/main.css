@@ -1,4 +1,4 @@
-@import './base.css';
+/* @import './base.css';
 
 #app {
   max-width: 1280px;
@@ -32,4 +32,38 @@ a,
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
   }
+} */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+body {
+  background: rgb(20,20,20); 
+  background: linear-gradient(90deg, rgba(20,20,20,1) 0%, rgba(41,41,41,1) 100%);
+}
+
+.main-blue-font-color {
+  color: #1FC7FF;
+}
+
+.blue-background-color {
+  background-color: #1FC7FF;
+}
+
+.card-background-color {
+  background-color: #292929;
+}
+
+.nav-font {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 20px;
+}
+
+.title-font {
+  font-family: "Montserrat", sans-serif;
+}
+
+.paragraph-font {
+  font-family: "Noto Sans", sans-serif;
 }

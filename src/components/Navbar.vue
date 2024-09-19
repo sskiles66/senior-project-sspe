@@ -17,6 +17,7 @@ export default {
         { id: 2, label: "About", link: "/about" },
         { id: 3, label: "Dashboard", link: "/dashboard" },
         { id: 4, label: "Profile", link: "/profile" },
+        { id: 5, label: "Login", link: "/login" },
       ],
     };
   },

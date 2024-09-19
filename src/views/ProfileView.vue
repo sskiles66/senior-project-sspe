@@ -1,7 +1,7 @@
 <template>
   <div class="profile flex justify-center mt-10">
     <div class="card-background-color w-10/12 rounded-lg border border-sky-500">
-        
+
       <div class="top-bar flex flex-wrap justify-evenly bg-slate-700 p-5 rounded-lg">
         <h1 class="main-blue-font-color title-font text-2xl mx-10">Exams Taken: 0</h1>
         <h1 class="main-blue-font-color title-font text-2xl mx-10">Average Score: 0</h1>
@@ -41,12 +41,3 @@
   </div>
 </template>
 
-<!-- <style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-</style> -->

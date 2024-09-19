@@ -25,29 +25,3 @@ export default {
   },
 };
 </script>
-
-<!-- <style scoped>
-.navbar {
-  display: flex;
-  justify-content: center;
-  padding: 1rem;
-  /* background-color: #f0f0f0; */
-}
-
-.navbar-list {
-  list-style: none;
-  display: flex;
-  margin: 0;
-  padding: 0;
-}
-
-.navbar-list li {
-  margin-right: 1rem;
-}
-
-.navbar-list a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
-</style> -->

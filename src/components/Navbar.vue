@@ -18,6 +18,8 @@ export default {
         { id: 3, label: "Dashboard", link: "/dashboard" },
         { id: 4, label: "Profile", link: "/profile" },
         { id: 5, label: "Login", link: "/login" },
+        { id: 6, label: "Exam", link: "/exam" },
+        { id: 7, label: "Exam Results", link: "/exam-results" },
       ],
     };
   },

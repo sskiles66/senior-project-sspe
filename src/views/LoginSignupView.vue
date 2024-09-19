@@ -1,19 +1,11 @@
 <script setup>
     import { ref } from "vue";
     const isLoggingIn = ref(true);
-    const buttonText = ref("Login");
-    const altButtonText = ref("Create An Account");
 
-    const handleTextChange = () => {
+    const handleFormChange = () => {
         isLoggingIn.value = !isLoggingIn.value;
-        if (isLoggingIn.value) {
-            buttonText.value = "Login";
-            altButtonText.value = "Create An Account";
-        } else {
-            buttonText.value = "Create Account";
-            altButtonText.value = "Log In";
-        }
     };
+
 </script>
 
 <template>
@@ -66,14 +58,14 @@
               class="blue-background-color hover:bg-blue-500 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
             >
-              {{ buttonText }}
+              {{ isLoggingIn ? 'Log In' : 'Create Account' }}
             </button>
             <button
-              @click="handleTextChange"
+              @click="handleFormChange"
               class="main-blue-font-color inline-block align-baseline text-sm font-semibold hover:text-indigo-800"
               type="button"
             >
-              {{ altButtonText }}
+              {{ isLoggingIn ? 'Create An Account' : 'Log In' }}
             </button>
           </div>
         </form>

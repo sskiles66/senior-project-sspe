@@ -1,11 +1,10 @@
 <script setup>
-    import { ref } from "vue";
-    const isLoggingIn = ref(true);
+import { ref } from "vue";
+const isLoggingIn = ref(true);
 
-    const handleFormChange = () => {
-        isLoggingIn.value = !isLoggingIn.value;
-    };
-
+const handleFormChange = () => {
+  isLoggingIn.value = !isLoggingIn.value;
+};
 </script>
 
 <template>
@@ -58,14 +57,14 @@
               class="blue-background-color hover:bg-blue-500 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
             >
-              {{ isLoggingIn ? 'Log In' : 'Create Account' }}
+              {{ isLoggingIn ? "Log In" : "Create Account" }}
             </button>
             <button
               @click="handleFormChange"
               class="main-blue-font-color inline-block align-baseline text-sm font-semibold hover:text-indigo-800"
               type="button"
             >
-              {{ isLoggingIn ? 'Create An Account' : 'Log In' }}
+              {{ isLoggingIn ? "Create An Account" : "Log In" }}
             </button>
           </div>
         </form>

@@ -4,67 +4,15 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-
-const questions = [
-  {
-    question: "111What is the difference between '==' and '===' operators?",
-    correctAnswer: {
-      value: "correct",
-      text: "The '==' operator compares values after potential type conversions, while '===' compares both values and types directly.",
-    },
-    incorrectAnswers: [
-      { value: "incorrect", text: "Both operators are the same." },
-      { value: "incorrect2", text: "==' is faster than '==='." },
-      { value: "incorrect3", text: "'===' is always preferable to '=='." },
-    ],
-  },
-  // Add more questions here
-];
-
-const questions2 = [
-  {
-    question: "222What is the difference between '==' and '===' operators?",
-    correctAnswer: {
-      value: "correct",
-      text: "2The '==' operator compares values after potential type conversions, while '===' compares both values and types directly.",
-    },
-    incorrectAnswers: [
-      { value: "incorrect", text: "2Both operators are the same." },
-      { value: "incorrect2", text: "2==' is faster than '==='." },
-      { value: "incorrect3", text: "'2===' is always preferable to '=='." },
-    ],
-  },
-  // Add more questions here
-];
-
-const questions3 = [
-  {
-    question: "333What is the difference between '==' and '===' operators?",
-    correctAnswer: {
-      value: "correct",
-      text: "3The '==' operator compares values after potential type conversions, while '===' compares both values and types directly.",
-    },
-    incorrectAnswers: [
-      { value: "incorrect", text: "3Both operators are the same." },
-      { value: "incorrect2", text: "3==' is faster than '==='." },
-      { value: "incorrect3", text: "3'===' is always preferable to '=='." },
-    ],
-  },
-  // Add more questions here
-];
-
-const questionArray = [questions, questions2, questions3];
-
 const currentQuestionNum = ref(1);
-const currentQuestionLevel = ref(0); // may not need this
 const selectedAnswer = ref("");
-const currentQuestion = ref(); // This is used for the template
-
 const examQuestionFromApi = ref();
-
 const level = ref(1);
-
 const currentCategory = ref();
+
+// Still need to randomize answers
+// have categories randomized (maybe use a queue system where the queue is made onMount)
+// Calculate score and category scores and havbe something happen after all questions have been answered. (POST result)
 
 onMounted(async () => {
   try {
@@ -77,26 +25,23 @@ onMounted(async () => {
     console.error("Error fetching exam data:", error);
   }
   // Get inital question based upon the first level
-  currentQuestion.value = questionArray[currentQuestionLevel.value];
 });
 
 // When currentQuestionNum changes, get new question based upon level
 watch(currentQuestionNum, async () => {
   const exam = route.params.id;
   const response2 = await axios.get(`http://localhost:5053/api/Questions/${exam}/${level.value}/${currentCategory.value}`); //This is the initial starting question
-  currentQuestion.value = questionArray[currentQuestionLevel.value];
+  examQuestionFromApi.value = response2.data;
 });
 
 const handleAnswerSubmission = (e) => {
   e.preventDefault();
   // With lower and upper limits of questionArray in mind, increase or decrease level
   // based upon correct or incorrect answer
-  if (selectedAnswer.value == "correct" && currentQuestionLevel.value != 2) {
-    currentQuestionLevel.value++;
+  if (selectedAnswer.value == "correct" && level.value != 3) {
     level.value++;
   }
-  if (selectedAnswer.value != "correct" && currentQuestionLevel.value != 0) {
-    currentQuestionLevel.value--;
+  if (selectedAnswer.value != "correct" && level.value != 1) {
     level.value--;
   }
   currentQuestionNum.value++;
@@ -113,14 +58,14 @@ const handleAnswerSubmission = (e) => {
           Question: {{ currentQuestionNum }}/60
         </h1>
         <h2
-          v-if="currentQuestion"
+          v-if="examQuestionFromApi"
           class="question title-font text-white text-2xl"
         >
-          {{ currentQuestion[0].question }}
+          {{ examQuestionFromApi.question_text }}
         </h2>
         <hr class="my-4 border border-sky-500" />
         <div
-          v-if="currentQuestion"
+          v-if="examQuestionFromApi"
           class="quiz-answers flex flex-col space-y-4"
         >
           <label class="quiz-option flex items-center">
@@ -128,11 +73,11 @@ const handleAnswerSubmission = (e) => {
               v-model="selectedAnswer"
               type="radio"
               name="question1"
-              :value="currentQuestion[0].correctAnswer.value"
+              :value="'correct'"
               class="mr-2"
             />
             <span class="text-white paragraph-font">{{
-              currentQuestion[0].correctAnswer.text
+              examQuestionFromApi.correct_answer
             }}</span>
           </label>
           <label class="quiz-option flex items-center">
@@ -140,11 +85,11 @@ const handleAnswerSubmission = (e) => {
               v-model="selectedAnswer"
               type="radio"
               name="question1"
-              :value="currentQuestion[0].incorrectAnswers[0].value"
+              :value="'incorrect1'"
               class="mr-2"
             />
             <span class="text-white paragraph-font">{{
-              currentQuestion[0].incorrectAnswers[0].text
+              examQuestionFromApi.wrong_answer_1
             }}</span>
           </label>
           <label class="quiz-option flex items-center">
@@ -152,11 +97,11 @@ const handleAnswerSubmission = (e) => {
               v-model="selectedAnswer"
               type="radio"
               name="question1"
-              :value="currentQuestion[0].incorrectAnswers[1].value"
+              :value="'incorrec2'"
               class="mr-2"
             />
             <span class="text-white paragraph-font">{{
-              currentQuestion[0].incorrectAnswers[1].text
+              examQuestionFromApi.wrong_answer_2
             }}</span>
           </label>
           <label class="quiz-option flex items-center">
@@ -164,11 +109,11 @@ const handleAnswerSubmission = (e) => {
               v-model="selectedAnswer"
               type="radio"
               name="question1"
-              :value="currentQuestion[0].incorrectAnswers[2].value"
+              :value="'incorrect3'"
               class="mr-2"
             />
             <span class="text-white paragraph-font">{{
-              currentQuestion[0].incorrectAnswers[2].text
+              examQuestionFromApi.wrong_answer_3
             }}</span>
           </label>
         </div>

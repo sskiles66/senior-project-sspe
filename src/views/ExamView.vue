@@ -9,8 +9,8 @@ const selectedAnswer = ref("");
 const examQuestionFromApi = ref();
 const level = ref(1);
 const currentCategory = ref();
+const examAnswerOptions = ref();
 
-// Still need to randomize answers
 // have categories randomized (maybe use a queue system where the queue is made onMount)
 // Calculate score and category scores and havbe something happen after all questions have been answered. (POST result)
 
@@ -19,8 +19,37 @@ onMounted(async () => {
     const exam = route.params.id;
     const response = await axios.get(`http://localhost:5053/api/Exams/${exam}`); // Can populate based upon exam info
     currentCategory.value = response.data.category_1;
-    const response2 = await axios.get(`http://localhost:5053/api/Questions/${exam}/1/${response.data.category_1}`); //This is the initial starting question
+    const response2 = await axios.get(
+      `http://localhost:5053/api/Questions/${exam}/1/${response.data.category_1}`
+    ); //This is the initial starting question
     examQuestionFromApi.value = response2.data;
+    // Populate answer options and then shuffle them
+    examAnswerOptions.value = [
+      {
+        value: "correct",
+        text: response2.data.correct_answer,
+      },
+      {
+        value: "incorrec1",
+        text: response2.data.wrong_answer_1,
+      },
+      {
+        value: "incorrect2",
+        text: response2.data.wrong_answer_2,
+      },
+      {
+        value: "inconrrect4",
+        text: response2.data.wrong_answer_3,
+      },
+    ];
+    // Fisher-Yates Shuffle algorithm
+    for (let i = examAnswerOptions.value.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [examAnswerOptions.value[i], examAnswerOptions.value[j]] = [
+        examAnswerOptions.value[j],
+        examAnswerOptions.value[i],
+      ];
+    }
   } catch (error) {
     console.error("Error fetching exam data:", error);
   }
@@ -30,8 +59,37 @@ onMounted(async () => {
 // When currentQuestionNum changes, get new question based upon level
 watch(currentQuestionNum, async () => {
   const exam = route.params.id;
-  const response2 = await axios.get(`http://localhost:5053/api/Questions/${exam}/${level.value}/${currentCategory.value}`); //This is the initial starting question
+  const response2 = await axios.get(
+    `http://localhost:5053/api/Questions/${exam}/${level.value}/${currentCategory.value}`
+  ); //This is the initial starting question
   examQuestionFromApi.value = response2.data;
+  // Populate answer options and then shuffle them
+  examAnswerOptions.value = [
+    {
+      value: "correct",
+      text: response2.data.correct_answer,
+    },
+    {
+      value: "incorrec1",
+      text: response2.data.wrong_answer_1,
+    },
+    {
+      value: "incorrect2",
+      text: response2.data.wrong_answer_2,
+    },
+    {
+      value: "inconrrect4",
+      text: response2.data.wrong_answer_3,
+    },
+  ];
+  // Fisher-Yates Shuffle algorithm
+  for (let i = examAnswerOptions.value.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [examAnswerOptions.value[i], examAnswerOptions.value[j]] = [
+      examAnswerOptions.value[j],
+      examAnswerOptions.value[i],
+    ];
+  }
 });
 
 const handleAnswerSubmission = (e) => {
@@ -44,6 +102,7 @@ const handleAnswerSubmission = (e) => {
   if (selectedAnswer.value != "correct" && level.value != 1) {
     level.value--;
   }
+  selectedAnswer.value = "";
   currentQuestionNum.value++;
 };
 </script>
@@ -65,56 +124,22 @@ const handleAnswerSubmission = (e) => {
         </h2>
         <hr class="my-4 border border-sky-500" />
         <div
-          v-if="examQuestionFromApi"
+          v-if="examAnswerOptions"
           class="quiz-answers flex flex-col space-y-4"
         >
-          <label class="quiz-option flex items-center">
+          <label
+            class="quiz-option flex items-center"
+            v-for="option in examAnswerOptions"
+            :key="option.value"
+          >
             <input
               v-model="selectedAnswer"
               type="radio"
-              name="question1"
-              :value="'correct'"
+              :name="question1"
+              :value="option.value"
               class="mr-2"
             />
-            <span class="text-white paragraph-font">{{
-              examQuestionFromApi.correct_answer
-            }}</span>
-          </label>
-          <label class="quiz-option flex items-center">
-            <input
-              v-model="selectedAnswer"
-              type="radio"
-              name="question1"
-              :value="'incorrect1'"
-              class="mr-2"
-            />
-            <span class="text-white paragraph-font">{{
-              examQuestionFromApi.wrong_answer_1
-            }}</span>
-          </label>
-          <label class="quiz-option flex items-center">
-            <input
-              v-model="selectedAnswer"
-              type="radio"
-              name="question1"
-              :value="'incorrec2'"
-              class="mr-2"
-            />
-            <span class="text-white paragraph-font">{{
-              examQuestionFromApi.wrong_answer_2
-            }}</span>
-          </label>
-          <label class="quiz-option flex items-center">
-            <input
-              v-model="selectedAnswer"
-              type="radio"
-              name="question1"
-              :value="'incorrect3'"
-              class="mr-2"
-            />
-            <span class="text-white paragraph-font">{{
-              examQuestionFromApi.wrong_answer_3
-            }}</span>
+            <span class="text-white paragraph-font">{{ option.text }}</span>
           </label>
         </div>
         <button

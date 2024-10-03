@@ -7,12 +7,25 @@ const route = useRoute();
 const currentQuestionNum = ref(1);
 const selectedAnswer = ref("");
 const examQuestionFromApi = ref();
-const level = ref(1);
 const currentCategory = ref();
 const examAnswerOptions = ref();
 
-// have categories randomized (maybe use a queue system where the queue is made onMount)
+const categoryQueue = ref([]);
+
+const numOfQuestions = 60;
+
+const categoryOneLevel = ref(1);
+const categoryTwoLevel = ref(1);
+const categoryThreeLevel = ref(1);
+const categoryFourLevel = ref(1);
+
+const allCategoriesEh = ref([]);
+
+// Need to get rid of hardcoded num of questions (60) when we actually put in questions
+// have categories randomized (maybe use a queue system where the queue is made onMount)    done but very very messy
 // Calculate score and category scores and havbe something happen after all questions have been answered. (POST result)
+
+// Next we need to keep track of max level of each category and then post the results at the end.
 
 onMounted(async () => {
   try {
@@ -42,12 +55,42 @@ onMounted(async () => {
         text: response2.data.wrong_answer_3,
       },
     ];
-    // Fisher-Yates Shuffle algorithm
+    // Fisher-Yates Shuffle algorithm, shuffling answer choices
     for (let i = examAnswerOptions.value.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [examAnswerOptions.value[i], examAnswerOptions.value[j]] = [
         examAnswerOptions.value[j],
         examAnswerOptions.value[i],
+      ];
+    }
+    const allCategories = [
+      response.data.category_1,
+      response.data.category_2,
+      response.data.category_3,
+      response.data.category_4,
+    ];
+    // repetition here to solve later. this is here for another place maybe watch
+
+    allCategoriesEh.value = [
+      response.data.category_1,
+      response.data.category_2,
+      response.data.category_3,
+      response.data.category_4,
+    ];
+
+    const divisor = numOfQuestions / 4;
+    for (let i = 0; i < allCategories.length; i++) {
+      for (let j = 0; j < divisor; j++) {
+        categoryQueue.value.push(allCategories[i]);
+      }
+    }
+    categoryQueue.value.splice(0, 1);
+    // Fisher-Yates Shuffle algorithm, shuffling category queue
+    for (let i = categoryQueue.value.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [categoryQueue.value[i], categoryQueue.value[j]] = [
+        categoryQueue.value[j],
+        categoryQueue.value[i],
       ];
     }
   } catch (error) {
@@ -58,9 +101,29 @@ onMounted(async () => {
 
 // When currentQuestionNum changes, get new question based upon level
 watch(currentQuestionNum, async () => {
+  // console.log(categoryQueue);
+  // getting top category from the queue, basically random category
+  currentCategory.value = categoryQueue.value.pop();
+  // console.log(currentCategory.value);
+  // console.log(categoryQueue);
+  // matching up our random category to a level value to know which level to get along with which category
+  let level;
+  if(currentCategory.value == allCategoriesEh.value[0]){
+    level = categoryOneLevel.value;
+  }
+  if(currentCategory.value == allCategoriesEh.value[1]){
+    level = categoryTwoLevel.value;
+  }
+  if(currentCategory.value == allCategoriesEh.value[2]){
+    level = categoryThreeLevel.value;
+  }
+  if(currentCategory.value == allCategoriesEh.value[3]){
+    level = categoryFourLevel.value;
+  }
+
   const exam = route.params.id;
   const response2 = await axios.get(
-    `http://localhost:5053/api/Questions/${exam}/${level.value}/${currentCategory.value}`
+    `http://localhost:5053/api/Questions/${exam}/${level}/${currentCategory.value}`
   ); //This is the initial starting question
   examQuestionFromApi.value = response2.data;
   // Populate answer options and then shuffle them
@@ -96,11 +159,36 @@ const handleAnswerSubmission = (e) => {
   e.preventDefault();
   // With lower and upper limits of questionArray in mind, increase or decrease level
   // based upon correct or incorrect answer
-  if (selectedAnswer.value == "correct" && level.value != 3) {
-    level.value++;
+  // Matching up random category (currentCategory) 
+  // and syncing it up with our declared categories (eh) 
+  // and updating correct level value
+  if (selectedAnswer.value == "correct") {
+    if (currentCategory.value == allCategoriesEh.value[0] && categoryOneLevel.value < 3){
+      categoryOneLevel.value++;
+    }
+    else if (currentCategory.value == allCategoriesEh.value[1] && categoryTwoLevel.value < 3){
+      categoryTwoLevel.value++;
+    }
+    else if (currentCategory.value == allCategoriesEh.value[2] && categoryThreeLevel.value < 3){
+      categoryThreeLevel.value++;
+    }
+    else if (currentCategory.value == allCategoriesEh.value[3] && categoryFourLevel.value < 3){
+      categoryFourLevel.value++;
+    }
   }
-  if (selectedAnswer.value != "correct" && level.value != 1) {
-    level.value--;
+  if (selectedAnswer.value != "correct") {
+    if (currentCategory.value == allCategoriesEh.value[0] && categoryOneLevel.value > 1){
+      categoryOneLevel.value--;
+    }
+    else if (currentCategory.value == allCategoriesEh.value[1] && categoryTwoLevel.value > 1){
+      categoryTwoLevel.value--;
+    }
+    else if (currentCategory.value == allCategoriesEh.value[2] && categoryThreeLevel.value > 1){
+      categoryThreeLevel.value--;
+    }
+    else if (currentCategory.value == allCategoriesEh.value[3] && categoryFourLevel.value > 1){
+      categoryFourLevel.value--;
+    }
   }
   selectedAnswer.value = "";
   currentQuestionNum.value++;
@@ -132,10 +220,10 @@ const handleAnswerSubmission = (e) => {
             v-for="option in examAnswerOptions"
             :key="option.value"
           >
+            <!-- Got rid of :name here -->
             <input
               v-model="selectedAnswer"
               type="radio"
-              :name="question1"
               :value="option.value"
               class="mr-2"
             />
@@ -150,6 +238,10 @@ const handleAnswerSubmission = (e) => {
         </button>
       </div>
     </div>
-    <p>{{ selectedAnswer }}</p>
+    <p class="text-white paragraph-font ml-5">{{ selectedAnswer }}</p>
+    <p class="text-white paragraph-font ml-5">{{ categoryOneLevel }}</p>
+    <p class="text-white paragraph-font ml-5">{{ categoryTwoLevel }}</p>
+    <p class="text-white paragraph-font ml-5">{{ categoryThreeLevel }}</p>
+    <p class="text-white paragraph-font ml-5">{{ categoryFourLevel }}</p>
   </main>
 </template>

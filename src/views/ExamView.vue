@@ -12,7 +12,7 @@ const examAnswerOptions = ref();
 
 const categoryQueue = ref([]);
 
-const numOfQuestions = 60;
+const numOfQuestions = 8;
 
 const categoryOneLevel = ref(1);
 const categoryTwoLevel = ref(1);
@@ -21,17 +21,20 @@ const categoryFourLevel = ref(1);
 
 const allCategoriesEh = ref([]);
 
+const allExamData = ref();
+
+const hasSubmitButtonBeenPressed = ref(false);
+
 // Need to get rid of hardcoded num of questions (60) when we actually put in questions
 // have categories randomized (maybe use a queue system where the queue is made onMount)    done but very very messy
-// Calculate score and category scores and havbe something happen after all questions have been answered. (POST result)
-
-// Next we need to keep track of max level of each category and then post the results at the end.
+// Exams aare mostly dynamic meaning many exam objects can work this component. Except number of questions
 
 onMounted(async () => {
   try {
     const exam = route.params.id;
     const response = await axios.get(`http://localhost:5053/api/Exams/${exam}`); // Can populate based upon exam info
     currentCategory.value = response.data.category_1;
+    allExamData.value = response.data;
     const response2 = await axios.get(
       `http://localhost:5053/api/Questions/${exam}/1/${response.data.category_1}`
     ); //This is the initial starting question
@@ -108,16 +111,16 @@ watch(currentQuestionNum, async () => {
   // console.log(categoryQueue);
   // matching up our random category to a level value to know which level to get along with which category
   let level;
-  if(currentCategory.value == allCategoriesEh.value[0]){
+  if (currentCategory.value == allCategoriesEh.value[0]) {
     level = categoryOneLevel.value;
   }
-  if(currentCategory.value == allCategoriesEh.value[1]){
+  if (currentCategory.value == allCategoriesEh.value[1]) {
     level = categoryTwoLevel.value;
   }
-  if(currentCategory.value == allCategoriesEh.value[2]){
+  if (currentCategory.value == allCategoriesEh.value[2]) {
     level = categoryThreeLevel.value;
   }
-  if(currentCategory.value == allCategoriesEh.value[3]){
+  if (currentCategory.value == allCategoriesEh.value[3]) {
     level = categoryFourLevel.value;
   }
 
@@ -159,40 +162,84 @@ const handleAnswerSubmission = (e) => {
   e.preventDefault();
   // With lower and upper limits of questionArray in mind, increase or decrease level
   // based upon correct or incorrect answer
-  // Matching up random category (currentCategory) 
-  // and syncing it up with our declared categories (eh) 
+  // Matching up random category (currentCategory)
+  // and syncing it up with our declared categories (eh)
   // and updating correct level value
   if (selectedAnswer.value == "correct") {
-    if (currentCategory.value == allCategoriesEh.value[0] && categoryOneLevel.value < 3){
+    if (
+      currentCategory.value == allCategoriesEh.value[0] &&
+      categoryOneLevel.value < 3
+    ) {
       categoryOneLevel.value++;
-    }
-    else if (currentCategory.value == allCategoriesEh.value[1] && categoryTwoLevel.value < 3){
+    } else if (
+      currentCategory.value == allCategoriesEh.value[1] &&
+      categoryTwoLevel.value < 3
+    ) {
       categoryTwoLevel.value++;
-    }
-    else if (currentCategory.value == allCategoriesEh.value[2] && categoryThreeLevel.value < 3){
+    } else if (
+      currentCategory.value == allCategoriesEh.value[2] &&
+      categoryThreeLevel.value < 3
+    ) {
       categoryThreeLevel.value++;
-    }
-    else if (currentCategory.value == allCategoriesEh.value[3] && categoryFourLevel.value < 3){
+    } else if (
+      currentCategory.value == allCategoriesEh.value[3] &&
+      categoryFourLevel.value < 3
+    ) {
       categoryFourLevel.value++;
     }
   }
   if (selectedAnswer.value != "correct") {
-    if (currentCategory.value == allCategoriesEh.value[0] && categoryOneLevel.value > 1){
+    if (
+      currentCategory.value == allCategoriesEh.value[0] &&
+      categoryOneLevel.value > 1
+    ) {
       categoryOneLevel.value--;
-    }
-    else if (currentCategory.value == allCategoriesEh.value[1] && categoryTwoLevel.value > 1){
+    } else if (
+      currentCategory.value == allCategoriesEh.value[1] &&
+      categoryTwoLevel.value > 1
+    ) {
       categoryTwoLevel.value--;
-    }
-    else if (currentCategory.value == allCategoriesEh.value[2] && categoryThreeLevel.value > 1){
+    } else if (
+      currentCategory.value == allCategoriesEh.value[2] &&
+      categoryThreeLevel.value > 1
+    ) {
       categoryThreeLevel.value--;
-    }
-    else if (currentCategory.value == allCategoriesEh.value[3] && categoryFourLevel.value > 1){
+    } else if (
+      currentCategory.value == allCategoriesEh.value[3] &&
+      categoryFourLevel.value > 1
+    ) {
       categoryFourLevel.value--;
     }
   }
   selectedAnswer.value = "";
   currentQuestionNum.value++;
 };
+
+//button here POST
+async function handleExamResultSubmission(e) {
+  e.preventDefault();
+  try {
+    const createExamResultResponse = await axios.post(
+      `http://localhost:5053/api/ExamResults`,
+      {
+        user_id: "8bf472db-164e-4ca1-94f2-8ccde7a265e4",
+        exam_id: allExamData.value.id,
+        score: categoryOneLevel.value + categoryTwoLevel.value + categoryThreeLevel.value + categoryFourLevel.value,
+        category_1_score: categoryOneLevel.value,
+        category_2_score: categoryTwoLevel.value,
+        category_3_score: categoryThreeLevel.value,
+        category_4_score: categoryFourLevel.value,
+      }
+    );
+    if (createExamResultResponse.status == 200) {
+      // setMessage({messageType: "Good", message: ["Game has been saved to the leaderboard"]})
+      hasSubmitButtonBeenPressed.value = true;
+      console.log("Success");
+    }
+  } catch (error) {
+    console.error("Error saving user data:", error);
+  }
+}
 </script>
 
 <template>
@@ -200,9 +247,10 @@ const handleAnswerSubmission = (e) => {
     <div class="exam-question-container flex justify-center mt-10">
       <div
         class="exam-question card-background-color w-10/12 rounded-lg border border-sky-500 p-5"
+        v-if="currentQuestionNum <= numOfQuestions"
       >
         <h1 class="question-num title-font main-blue-font-color text-4xl mb-5">
-          Question: {{ currentQuestionNum }}/60
+          Question: {{ currentQuestionNum }}/{{ numOfQuestions }}
         </h1>
         <h2
           v-if="examQuestionFromApi"
@@ -235,6 +283,49 @@ const handleAnswerSubmission = (e) => {
           class="blue-background-color paragraph-font p-4 mt-10 rounded-lg"
         >
           Next Question
+        </button>
+      </div>
+
+      <div v-else class="w-10/12">
+        <div class="general-results">
+          <h1 class="title-font main-blue-font-color text-4xl">Results</h1>
+          <h2 class="title-font main-blue-font-color text-2xl my-10">
+            Time Taken: 45:23
+          </h2>
+          <h2 class="title-font main-blue-font-color text-2xl my-10">
+            Overall Score:
+            {{
+              categoryOneLevel +
+              categoryTwoLevel +
+              categoryThreeLevel +
+              categoryFourLevel
+            }}
+          </h2>
+        </div>
+        <div class="category-results-container">
+          <div
+            class="category-results card-background-color rounded-lg border border-sky-500 p-5 flex justify-between"
+          >
+            <h3 class="paragraph-font text-white">
+              {{ allCategoriesEh[0] }}: {{ categoryOneLevel }}
+            </h3>
+            <h3 class="paragraph-font text-white">
+              {{ allCategoriesEh[1] }}: {{ categoryTwoLevel }}
+            </h3>
+            <h3 class="paragraph-font text-white">
+              {{ allCategoriesEh[2] }}: {{ categoryThreeLevel }}
+            </h3>
+            <h3 class="paragraph-font text-white">
+              {{ allCategoriesEh[3] }}: {{ categoryFourLevel }}
+            </h3>
+          </div>
+        </div>
+        <button
+          @click="handleExamResultSubmission"
+          class="blue-background-color paragraph-font p-4 mt-10 rounded-lg"
+          :disabled="hasSubmitButtonBeenPressed"
+        >
+          Submit Exam Result
         </button>
       </div>
     </div>

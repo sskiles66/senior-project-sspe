@@ -2,6 +2,8 @@
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
+import ExamQuestionCard from "@/components/ExamQuestionCard.vue";
+import ExamResult from "@/components/ExamResult.vue";
 
 const route = useRoute();
 const currentQuestionNum = ref(1);
@@ -23,11 +25,10 @@ const allCategoriesEh = ref([]);
 
 const allExamData = ref();
 
-const hasSubmitButtonBeenPressed = ref(false);
-
 // Need to get rid of hardcoded num of questions (60) when we actually put in questions
 // have categories randomized (maybe use a queue system where the queue is made onMount)    done but very very messy
 // Exams aare mostly dynamic meaning many exam objects can work this component. Except number of questions
+// separated this view into components, need to try to simplify the logic if possible
 
 onMounted(async () => {
   try {
@@ -215,119 +216,38 @@ const handleAnswerSubmission = (e) => {
   currentQuestionNum.value++;
 };
 
-//button here POST
-async function handleExamResultSubmission(e) {
-  e.preventDefault();
-  try {
-    const createExamResultResponse = await axios.post(
-      `http://localhost:5053/api/ExamResults`,
-      {
-        user_id: "8bf472db-164e-4ca1-94f2-8ccde7a265e4",
-        exam_id: allExamData.value.id,
-        score: categoryOneLevel.value + categoryTwoLevel.value + categoryThreeLevel.value + categoryFourLevel.value,
-        category_1_score: categoryOneLevel.value,
-        category_2_score: categoryTwoLevel.value,
-        category_3_score: categoryThreeLevel.value,
-        category_4_score: categoryFourLevel.value,
-      }
-    );
-    if (createExamResultResponse.status == 200) {
-      // setMessage({messageType: "Good", message: ["Game has been saved to the leaderboard"]})
-      hasSubmitButtonBeenPressed.value = true;
-      console.log("Success");
-    }
-  } catch (error) {
-    console.error("Error saving user data:", error);
-  }
+function handleSelectedAnswerChange(newAnswer) {
+  // Do something with the new answer
+  selectedAnswer.value = newAnswer;
 }
 </script>
 
 <template>
   <main>
     <div class="exam-question-container flex justify-center mt-10">
-      <div
-        class="exam-question card-background-color w-10/12 rounded-lg border border-sky-500 p-5"
+      <!-- Most of the below reactive values are fed in from from the watch hook that triggiers from the handleAnswerSubmission event and the function itself -->
+      <!-- : is a shortcut for v-bind -->
+      <ExamQuestionCard
         v-if="currentQuestionNum <= numOfQuestions"
-      >
-        <h1 class="question-num title-font main-blue-font-color text-4xl mb-5">
-          Question: {{ currentQuestionNum }}/{{ numOfQuestions }}
-        </h1>
-        <h2
-          v-if="examQuestionFromApi"
-          class="question title-font text-white text-2xl"
-        >
-          {{ examQuestionFromApi.question_text }}
-        </h2>
-        <hr class="my-4 border border-sky-500" />
-        <div
-          v-if="examAnswerOptions"
-          class="quiz-answers flex flex-col space-y-4"
-        >
-          <label
-            class="quiz-option flex items-center"
-            v-for="option in examAnswerOptions"
-            :key="option.value"
-          >
-            <!-- Got rid of :name here -->
-            <input
-              v-model="selectedAnswer"
-              type="radio"
-              :value="option.value"
-              class="mr-2"
-            />
-            <span class="text-white paragraph-font">{{ option.text }}</span>
-          </label>
-        </div>
-        <button
-          @click="handleAnswerSubmission"
-          class="blue-background-color paragraph-font p-4 mt-10 rounded-lg"
-        >
-          Next Question
-        </button>
-      </div>
+        :current-question-num="currentQuestionNum"
+        :num-of-questions="numOfQuestions"
+        :exam-question-from-api="examQuestionFromApi"
+        :exam-answer-options="examAnswerOptions"
+        v-bind:selected-answer="selectedAnswer"
+        @handle-answer-submission="handleAnswerSubmission"
+        @update:selectedAnswer="handleSelectedAnswerChange"
+      />
 
-      <div v-else class="w-10/12">
-        <div class="general-results">
-          <h1 class="title-font main-blue-font-color text-4xl">Results</h1>
-          <h2 class="title-font main-blue-font-color text-2xl my-10">
-            Time Taken: 45:23
-          </h2>
-          <h2 class="title-font main-blue-font-color text-2xl my-10">
-            Overall Score:
-            {{
-              categoryOneLevel +
-              categoryTwoLevel +
-              categoryThreeLevel +
-              categoryFourLevel
-            }}
-          </h2>
-        </div>
-        <div class="category-results-container">
-          <div
-            class="category-results card-background-color rounded-lg border border-sky-500 p-5 flex justify-between"
-          >
-            <h3 class="paragraph-font text-white">
-              {{ allCategoriesEh[0] }}: {{ categoryOneLevel }}
-            </h3>
-            <h3 class="paragraph-font text-white">
-              {{ allCategoriesEh[1] }}: {{ categoryTwoLevel }}
-            </h3>
-            <h3 class="paragraph-font text-white">
-              {{ allCategoriesEh[2] }}: {{ categoryThreeLevel }}
-            </h3>
-            <h3 class="paragraph-font text-white">
-              {{ allCategoriesEh[3] }}: {{ categoryFourLevel }}
-            </h3>
-          </div>
-        </div>
-        <button
-          @click="handleExamResultSubmission"
-          class="blue-background-color paragraph-font p-4 mt-10 rounded-lg"
-          :disabled="hasSubmitButtonBeenPressed"
-        >
-          Submit Exam Result
-        </button>
-      </div>
+      <ExamResult 
+        v-else
+        :categoryOneLevel="categoryOneLevel"
+        :categoryTwoLevel="categoryTwoLevel"
+        :categoryThreeLevel="categoryThreeLevel"
+        :categoryFourLevel="categoryFourLevel"
+        :allCategoriesEh="allCategoriesEh"
+        :allExamData="allExamData"
+      />
+
     </div>
     <p class="text-white paragraph-font ml-5">{{ selectedAnswer }}</p>
     <p class="text-white paragraph-font ml-5">{{ categoryOneLevel }}</p>

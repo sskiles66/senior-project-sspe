@@ -14,7 +14,7 @@ const examAnswerOptions = ref();
 
 const categoryQueue = ref([]);
 
-const numOfQuestions = 8;
+const numOfQuestions = ref();
 
 const categoryOneLevel = ref(1);
 const categoryTwoLevel = ref(1);
@@ -36,6 +36,7 @@ onMounted(async () => {
     const response = await axios.get(`http://localhost:5053/api/Exams/${exam}`); // Can populate based upon exam info
     currentCategory.value = response.data.category_1;
     allExamData.value = response.data;
+    numOfQuestions.value = response.data.number_of_questions;
     const response2 = await axios.get(
       `http://localhost:5053/api/Questions/${exam}/1/${response.data.category_1}`
     ); //This is the initial starting question
@@ -82,7 +83,7 @@ onMounted(async () => {
       response.data.category_4,
     ];
 
-    const divisor = numOfQuestions / 4;
+    const divisor = numOfQuestions.value / 4;
     for (let i = 0; i < allCategories.length; i++) {
       for (let j = 0; j < divisor; j++) {
         categoryQueue.value.push(allCategories[i]);

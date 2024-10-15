@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
 
 const examResults = ref();
 
@@ -8,7 +9,12 @@ const selectedResultIndex = ref();
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`http://localhost:5053/api/ExamResults/8bf472db-164e-4ca1-94f2-8ccde7a265e4`); // placeholder until we have user id
+    const token = localStorage.getItem('token');
+    const decodedToken = jwtDecode(token);
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const response = await axios.get(`http://localhost:5053/api/ExamResults/${decodedToken.UserId}`, config); // placeholder until we have user id
     examResults.value = response.data;
   } catch (error) {
     console.error("Error fetching exam data:", error);

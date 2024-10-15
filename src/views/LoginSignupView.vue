@@ -1,9 +1,46 @@
 <script setup>
 import { ref } from "vue";
+import axios from "axios";
 const isLoggingIn = ref(true);
+const nameInput = ref("");
+const emailInput = ref("");
+const passwordInput = ref("");
 
 const handleFormChange = () => {
   isLoggingIn.value = !isLoggingIn.value;
+};
+
+const handleFormSubmit = async (e) => {
+  e.preventDefault();
+  if (isLoggingIn.value) {
+    console.log("logging in ");
+  } else {
+    console.log("signing up");
+    try {
+      const createUserResponse = await axios.post(
+        `http://localhost:5053/api/Users`,
+        {
+          password_hash: passwordInput.value,
+          name: nameInput.value,
+          email: emailInput.value,
+        }
+      );
+      if (createUserResponse.status == 200) {
+        console.log("Success");
+        try {
+          const createTokenResponse = await axios.post(
+            `http://localhost:5053/api/Auth/${createUserResponse.data.id}`
+          );
+          // console.log(createTokenResponse.data);
+          localStorage.setItem("token", createTokenResponse.data)
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    } catch (error) {
+      console.error("Error saving user data:", error);
+    }
+  }
 };
 </script>
 
@@ -26,6 +63,7 @@ const handleFormChange = () => {
               id="first name"
               type="text"
               placeholder="First Name"
+              v-model="nameInput"
             />
           </div>
           <div class="mb-4">
@@ -37,6 +75,7 @@ const handleFormChange = () => {
               id="email"
               type="email"
               placeholder="Email"
+              v-model="emailInput"
             />
           </div>
           <div class="mb-6">
@@ -50,10 +89,12 @@ const handleFormChange = () => {
               id="password"
               type="password"
               placeholder="Password"
+              v-model="passwordInput"
             />
           </div>
           <div class="flex items-center justify-between">
             <button
+              @click="handleFormSubmit"
               class="blue-background-color hover:bg-blue-500 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
             >

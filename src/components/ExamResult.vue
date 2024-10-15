@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import { jwtDecode } from 'jwt-decode';
 
 const props = defineProps({
   categoryOneLevel: {
@@ -33,10 +34,12 @@ const hasSubmitButtonBeenPressed = ref(false);
 async function handleExamResultSubmission(e) {
   e.preventDefault();
   try {
+    const token = localStorage.getItem('token');
+    const decodedToken = jwtDecode(token);
     const createExamResultResponse = await axios.post(
       `http://localhost:5053/api/ExamResults`,
       {
-        user_id: "8bf472db-164e-4ca1-94f2-8ccde7a265e4",
+        user_id: decodedToken.UserId,
         exam_id: props.allExamData.id,
         score:
           props.categoryOneLevel +

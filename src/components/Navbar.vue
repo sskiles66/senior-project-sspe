@@ -1,3 +1,19 @@
+<script setup>
+import { jwtDecode } from 'jwt-decode';
+
+const items = [
+  { id: 1, label: "Home", link: "/" },
+  { id: 2, label: "About", link: "/about" },
+  { id: 3, label: "Dashboard", link: "/dashboard" },
+  { id: 4, label: "Profile", link: "/profile" },
+  { id: 5, label: "Login", link: "/login" },
+  { id: 7, label: "Exam Results", link: "/exam-results" },
+];
+
+const decodedToken = jwtDecode(localStorage.getItem('token'));
+console.log(decodedToken);
+</script>
+
 <template>
   <nav class="navbar">
     <ul class="navbar-list flex justify-center p-3 bg-gray-800/10">
@@ -8,19 +24,3 @@
   </nav>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      items: [
-        { id: 1, label: "Home", link: "/" },
-        { id: 2, label: "About", link: "/about" },
-        { id: 3, label: "Dashboard", link: "/dashboard" },
-        { id: 4, label: "Profile", link: "/profile" },
-        { id: 5, label: "Login", link: "/login" },
-        { id: 7, label: "Exam Results", link: "/exam-results" },
-      ],
-    };
-  },
-};
-</script>

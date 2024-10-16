@@ -1,25 +1,51 @@
 <script setup>
 import { jwtDecode } from 'jwt-decode';
+import { onMounted, ref } from 'vue';
 
-const items = [
-  { id: 1, label: "Home", link: "/" },
-  { id: 2, label: "About", link: "/about" },
-  { id: 3, label: "Dashboard", link: "/dashboard" },
-  { id: 4, label: "Profile", link: "/profile" },
-  { id: 5, label: "Login", link: "/login" },
-  { id: 7, label: "Exam Results", link: "/exam-results" },
-];
+const hasToken = ref(false);
+const jwt = ref();
 
-const decodedToken = jwtDecode(localStorage.getItem('token'));
-console.log(decodedToken);
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  if (token){
+    const decodedToken = jwtDecode(token);
+    jwt.value = decodedToken;
+    hasToken.value = true;
+    console.log(decodedToken);
+  }
+});
+
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = '/';
+}
+
 </script>
 
 <template>
   <nav class="navbar">
     <ul class="navbar-list flex justify-center p-3 bg-gray-800/10">
-      <li class="main-blue-font-color nav-font m-5" v-for="item in items" :key="item.id">
-        <router-link :to="item.link">{{ item.label }}</router-link>
+      <li class="main-blue-font-color nav-font m-5">
+        <router-link to="/">Home</router-link>
       </li>
+      <li class="main-blue-font-color nav-font m-5">
+        <router-link to="/about">About</router-link>
+      </li>
+      <li class="main-blue-font-color nav-font m-5">
+        <router-link to="/dashboard">Dashboard</router-link>
+      </li>
+      <li class="main-blue-font-color nav-font m-5">
+        <router-link to="/login">Login</router-link>
+      </li>
+      <li v-if="hasToken" class="main-blue-font-color nav-font m-5">
+        <router-link to="/profile">Profile</router-link>
+      </li>
+      <li v-if="hasToken" @click="logout" class="main-blue-font-color nav-font m-5 hover:cursor-pointer">
+        Logout
+      </li>
+      <!-- <li class="main-blue-font-color nav-font m-5">
+        <router-link to="/exam-results">Exam Results</router-link>
+      </li> -->
     </ul>
   </nav>
 </template>

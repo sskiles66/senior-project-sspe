@@ -3,13 +3,12 @@ import { jwtDecode } from 'jwt-decode';
 import { onMounted, ref } from 'vue';
 
 const hasToken = ref(false);
-const jwt = ref();
+const decodedToken = ref();
 
 onMounted(async () => {
   const token = localStorage.getItem('token');
   if (token){
-    const decodedToken = jwtDecode(token);
-    jwt.value = decodedToken;
+    decodedToken.value = jwtDecode(token);
     hasToken.value = true;
     console.log(decodedToken);
   }

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 
@@ -29,17 +29,30 @@ const props = defineProps({
 });
 
 const hasSubmitButtonBeenPressed = ref(false);
+const hasToken = ref(false);
+const jwt = ref();
+const decodedToken = ref();
+
+onMounted(async () => {
+  const token = localStorage.getItem('token');
+  if (token){
+    jwt.value = token;
+    decodedToken.value = jwtDecode(token);
+    hasToken.value = true;
+  }
+});
 
 //button here POST
 async function handleExamResultSubmission(e) {
   e.preventDefault();
   try {
-    const token = localStorage.getItem('token');
-    const decodedToken = jwtDecode(token);
+    const config = {
+      headers: { Authorization: `Bearer ${jwt.value}` },
+    };
     const createExamResultResponse = await axios.post(
       `http://localhost:5053/api/ExamResults`,
       {
-        user_id: decodedToken.UserId,
+        user_id: decodedToken.value.UserId,
         exam_id: props.allExamData.id,
         score:
           props.categoryOneLevel +
@@ -50,7 +63,8 @@ async function handleExamResultSubmission(e) {
         category_2_score: props.categoryTwoLevel,
         category_3_score: props.categoryThreeLevel,
         category_4_score: props.categoryFourLevel,
-      }
+      },
+      config
     );
     if (createExamResultResponse.status == 200) {
       // setMessage({messageType: "Good", message: ["Game has been saved to the leaderboard"]})
@@ -101,9 +115,10 @@ async function handleExamResultSubmission(e) {
     <button
       @click="handleExamResultSubmission"
       class="blue-background-color paragraph-font p-4 mt-10 rounded-lg"
-      :disabled="hasSubmitButtonBeenPressed"
+      :disabled="hasSubmitButtonBeenPressed || !hasToken"
     >
       Submit Exam Result
     </button>
+    <p v-if="!hasToken" class="paragraph-font text-white mt-5">Must be logged in to submit exam result.</p>
   </div>
 </template>

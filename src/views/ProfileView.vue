@@ -25,7 +25,7 @@ onMounted(async () => {
 
 
 <template>
-  <div class="profile flex justify-center mt-10">
+  <div class="profile flex justify-center mt-10" style="margin: 50px auto; max-width: 2000px;">
     <div class="card-background-color w-10/12 rounded-lg border border-sky-500" v-if="examResults">
 
       <div class="top-bar flex flex-wrap justify-evenly bg-slate-700 p-5 rounded-lg">

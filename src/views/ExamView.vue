@@ -225,7 +225,7 @@ function handleSelectedAnswerChange(newAnswer) {
 
 <template>
   <main>
-    <div class="exam-question-container flex justify-center mt-10">
+    <div class="exam-question-container flex justify-center mt-10" style="margin: 50px auto; max-width: 2000px;">
       <!-- Most of the below reactive values are fed in from from the watch hook that triggiers from the handleAnswerSubmission event and the function itself -->
       <!-- : is a shortcut for v-bind -->
       <ExamQuestionCard

@@ -72,7 +72,7 @@ const handleFormSubmit = async (e) => {
 <template>
   <main class="container mx-auto p-4">
     <div class="flex flex-col items-center justify-center mt-20">
-      <h1 class="main-blue-font-color text-4xl font-bold mb-4">Login/Signup</h1>
+      <h1 class="main-blue-font-color text-4xl font-bold mb-4 title-font">{{ isLoggingIn ? "Login" : "Sign Up" }}</h1>
       <div class="w-full max-w-md">
         <form
           class="card-background-color shadow-md rounded px-8 pt-6 pb-8 mb-4"

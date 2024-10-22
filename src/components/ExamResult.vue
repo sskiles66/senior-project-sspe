@@ -23,7 +23,7 @@ const props = defineProps({
   allExamData: {
     type: Object,
   },
-  allCategoriesEh: {
+  allCategories: {
     type: Array,
   },
 });
@@ -99,16 +99,16 @@ async function handleExamResultSubmission(e) {
         class="category-results card-background-color rounded-lg border border-sky-500 p-5 flex justify-between"
       >
         <h3 class="paragraph-font text-white">
-          {{ allCategoriesEh[0] }}: {{ categoryOneLevel }}
+          {{ allCategories[0] }}: {{ categoryOneLevel }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ allCategoriesEh[1] }}: {{ categoryTwoLevel }}
+          {{ allCategories[1] }}: {{ categoryTwoLevel }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ allCategoriesEh[2] }}: {{ categoryThreeLevel }}
+          {{ allCategories[2] }}: {{ categoryThreeLevel }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ allCategoriesEh[3] }}: {{ categoryFourLevel }}
+          {{ allCategories[3] }}: {{ categoryFourLevel }}
         </h3>
       </div>
     </div>

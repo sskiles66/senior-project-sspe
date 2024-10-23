@@ -6,13 +6,31 @@ const nameInput = ref("");
 const emailInput = ref("");
 const passwordInput = ref("");
 const message = ref();
+const firstNameError = ref("");
+const emailError = ref("");
+const passwordError = ref("");
 
-// TODO
-// validation for backend
-// create response from backend for if an email is already registered
+const validateFirstName = () => {
+  firstNameError.value = nameInput.value.trim() === '' ? 'First name is required.' : '';
+};
+
+const validateEmail = () => {
+  emailError.value = emailInput.value.trim() === '' ? 'Email is required and needs to be a valid email.' : '';
+};
+
+const validatePassword = () => {
+  passwordError.value = passwordInput.value.length < 8 ? 'Password must be at least 8 characters long.' : '';
+};
 
 const handleFormChange = () => {
   isLoggingIn.value = !isLoggingIn.value;
+  message.value = "";
+  nameInput.value = "";
+  firstNameError.value = "";
+  emailInput.value = "";
+  emailError.value = "";
+  passwordInput.value = "";
+  passwordError.value = "";
 };
 
 const handleFormSubmit = async (e) => {
@@ -47,11 +65,28 @@ const handleFormSubmit = async (e) => {
           messageType: "error",
           messageText: "User not found.",
         };
-      }
-      else if (error.status == 401){
+      } else if (error.status == 401) {
         message.value = {
           messageType: "error",
           messageText: "Incorrect password.",
+        };
+      }
+      if (error.response.status == 400) {
+        let messageText = "";
+        if (error.response.data.errors) {
+          for (const key in error.response.data.errors) {
+            const errorMessages = error.response.data.errors[key];
+            // Iterate over each error message in the array
+            errorMessages.forEach((errorMessage) => {
+              messageText += errorMessage;
+            });
+          }
+        }else{
+          messageText = error.response.data
+        }
+        message.value = {
+          messageType: "error",
+          messageText: messageText,
         };
       }
     }
@@ -80,6 +115,24 @@ const handleFormSubmit = async (e) => {
         }
       }
     } catch (error) {
+      if (error.response.status == 400) {
+        let messageText = "";
+        if (error.response.data.errors) {
+          for (const key in error.response.data.errors) {
+            const errorMessages = error.response.data.errors[key];
+            // Iterate over each error message in the array
+            errorMessages.forEach((errorMessage) => {
+              messageText += errorMessage;
+            });
+          }
+        }else{
+          messageText = error.response.data
+        }
+        message.value = {
+          messageType: "error",
+          messageText: messageText,
+        };
+      }
       console.error("Error saving user data:", error);
     }
   }
@@ -95,6 +148,7 @@ const handleFormSubmit = async (e) => {
       <div class="w-full max-w-md">
         <form
           class="card-background-color shadow-md rounded px-8 pt-6 pb-8 mb-4"
+          @submit="handleFormSubmit"
         >
           <div v-if="!isLoggingIn" class="mb-4">
             <label
@@ -108,7 +162,10 @@ const handleFormSubmit = async (e) => {
               type="text"
               placeholder="First Name"
               v-model="nameInput"
+              required
+              @input="validateFirstName"
             />
+            <p v-if="firstNameError" class="error text-red-500 mt-2">{{ firstNameError }}</p>
           </div>
           <div class="mb-4">
             <label class="main-blue-font-color block font-bold mb-2" for="email"
@@ -120,7 +177,10 @@ const handleFormSubmit = async (e) => {
               type="email"
               placeholder="Email"
               v-model="emailInput"
+              required
+              @input="validateEmail"
             />
+            <p v-if="emailError" class="error text-red-500 mt-2">{{ emailError }}</p>
           </div>
           <div class="mb-6">
             <label
@@ -134,11 +194,15 @@ const handleFormSubmit = async (e) => {
               type="password"
               placeholder="Password"
               v-model="passwordInput"
+              required
+              minlength="8"
+              @input="validatePassword"
             />
+            <p v-if="passwordError" class="error text-red-500 mt-2">{{ passwordError }}</p>
           </div>
           <p
             v-if="message"
-            class="paragraph-font my-5 text-white"
+            class="paragraph-font my-5"
             :class="[
               message.messageType === 'success'
                 ? 'text-green-400'
@@ -149,9 +213,8 @@ const handleFormSubmit = async (e) => {
           </p>
           <div class="flex items-center justify-between">
             <button
-              @click="handleFormSubmit"
               class="blue-background-color hover:bg-blue-500 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button"
+              type="submit"
             >
               {{ isLoggingIn ? "Log In" : "Create Account" }}
             </button>

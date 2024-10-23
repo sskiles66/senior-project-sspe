@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 const props = defineProps({
   categoryData: {
     type: Array,
-    required: true
+    required: true,
   },
   allExamData: {
     type: Object,
@@ -17,10 +17,11 @@ const hasSubmitButtonBeenPressed = ref(false);
 const hasToken = ref(false);
 const jwt = ref();
 const decodedToken = ref();
+const message = ref();
 
 onMounted(async () => {
-  const token = localStorage.getItem('token');
-  if (token){
+  const token = localStorage.getItem("token");
+  if (token) {
     jwt.value = token;
     decodedToken.value = jwtDecode(token);
     hasToken.value = true;
@@ -52,12 +53,18 @@ async function handleExamResultSubmission(e) {
       config
     );
     if (createExamResultResponse.status == 200) {
-      // setMessage({messageType: "Good", message: ["Game has been saved to the leaderboard"]})
       hasSubmitButtonBeenPressed.value = true;
-      console.log("Success");
+      message.value = {
+        messageText: "Score has been successfully saved to profile.",
+        messageType: "success",
+      };
     }
   } catch (error) {
     console.error("Error saving user data:", error);
+    message.value = {
+      messageText: "Something went wrong.",
+      messageType: "error",
+    };
   }
 }
 </script>
@@ -84,16 +91,20 @@ async function handleExamResultSubmission(e) {
         class="category-results card-background-color rounded-lg border border-sky-500 p-5 flex justify-between"
       >
         <h3 class="paragraph-font text-white">
-          {{ categoryData[0].categoryName }}: {{ categoryData[0].categoryScore }}
+          {{ categoryData[0].categoryName }}:
+          {{ categoryData[0].categoryScore }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ categoryData[1].categoryName }}: {{ categoryData[1].categoryScore }}
+          {{ categoryData[1].categoryName }}:
+          {{ categoryData[1].categoryScore }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ categoryData[2].categoryName }}: {{ categoryData[2].categoryScore }}
+          {{ categoryData[2].categoryName }}:
+          {{ categoryData[2].categoryScore }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ categoryData[3].categoryName }}: {{ categoryData[3].categoryScore }}
+          {{ categoryData[3].categoryName }}:
+          {{ categoryData[3].categoryScore }}
         </h3>
       </div>
     </div>
@@ -104,6 +115,17 @@ async function handleExamResultSubmission(e) {
     >
       Submit Exam Result
     </button>
-    <p v-if="!hasToken" class="paragraph-font text-white mt-5">Must be logged in to submit exam result.</p>
+    <p
+      v-if="message"
+      class="paragraph-font mt-5"
+      :class="[
+        message.messageType === 'success' ? 'text-green-400' : 'text-red-500',
+      ]"
+    >
+      {{ message.messageText }}
+    </p>
+    <p v-if="!hasToken" class="paragraph-font text-white mt-5">
+      Must be logged in to submit exam result.
+    </p>
   </div>
 </template>

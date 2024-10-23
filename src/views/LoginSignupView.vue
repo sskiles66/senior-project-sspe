@@ -5,6 +5,11 @@ const isLoggingIn = ref(true);
 const nameInput = ref("");
 const emailInput = ref("");
 const passwordInput = ref("");
+const message = ref();
+
+// TODO
+// validation for backend
+// create response from backend for if an email is already registered
 
 const handleFormChange = () => {
   isLoggingIn.value = !isLoggingIn.value;
@@ -30,13 +35,25 @@ const handleFormSubmit = async (e) => {
           );
           // console.log(createTokenResponse.data);
           localStorage.setItem("token", createTokenResponse.data);
-          window.location.href = '/Profile';
+          window.location.href = "/Profile";
         } catch (error) {
-          console.log(error);
+          console.log(error, "test2");
         }
       }
     } catch (error) {
       console.log(error);
+      if (error.status == 404) {
+        message.value = {
+          messageType: "error",
+          messageText: "User not found.",
+        };
+      }
+      else if (error.status == 401){
+        message.value = {
+          messageType: "error",
+          messageText: "Incorrect password.",
+        };
+      }
     }
   } else {
     console.log("signing up");
@@ -57,7 +74,7 @@ const handleFormSubmit = async (e) => {
           );
           // console.log(createTokenResponse.data);
           localStorage.setItem("token", createTokenResponse.data);
-          window.location.href = '/Profile';
+          window.location.href = "/Profile";
         } catch (error) {
           console.log(error);
         }
@@ -72,7 +89,9 @@ const handleFormSubmit = async (e) => {
 <template>
   <main class="container mx-auto p-4">
     <div class="flex flex-col items-center justify-center mt-20">
-      <h1 class="main-blue-font-color text-4xl font-bold mb-4 title-font">{{ isLoggingIn ? "Login" : "Sign Up" }}</h1>
+      <h1 class="main-blue-font-color text-4xl font-bold mb-4 title-font">
+        {{ isLoggingIn ? "Login" : "Sign Up" }}
+      </h1>
       <div class="w-full max-w-md">
         <form
           class="card-background-color shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -117,6 +136,17 @@ const handleFormSubmit = async (e) => {
               v-model="passwordInput"
             />
           </div>
+          <p
+            v-if="message"
+            class="paragraph-font my-5 text-white"
+            :class="[
+              message.messageType === 'success'
+                ? 'text-green-400'
+                : 'text-red-500',
+            ]"
+          >
+            {{ message.messageText }}
+          </p>
           <div class="flex items-center justify-between">
             <button
               @click="handleFormSubmit"

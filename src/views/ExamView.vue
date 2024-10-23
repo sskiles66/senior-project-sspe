@@ -8,21 +8,35 @@ import ExamResult from "@/components/ExamResult.vue";
 const route = useRoute();
 const currentQuestionNum = ref(1);
 const selectedAnswer = ref("");
-
 const examQuestionFromApi = ref(); // whole current exam question
-
 const currentCategory = ref();
-
-const examAnswerOptions = ref();
-
+const examAnswerOptions = ref(); // answer options that get put into their own object from the whole question that are shuffled
 const categoryQueue = ref([]);
 const numOfQuestions = ref();
-const categoryOneLevel = ref(1);
-const categoryTwoLevel = ref(1);
-const categoryThreeLevel = ref(1);
-const categoryFourLevel = ref(1);
-const allCategories = ref([]);
+const categoryData = ref([
+  {
+    categoryName: "",
+    categoryLevel: 1,
+    categoryScore: 0,
+  },
+  {
+    categoryName: "",
+    categoryLevel: 1,
+    categoryScore: 0,
+  },
+  {
+    categoryName: "",
+    categoryLevel: 1,
+    categoryScore: 0,
+  },
+  {
+    categoryName: "",
+    categoryLevel: 1,
+    categoryScore: 0,
+  },
+]);
 const allExamData = ref();
+const maxLevelConstraint = ref();
 
 onMounted(async () => {
   try {
@@ -41,23 +55,32 @@ onMounted(async () => {
 
     shuffle(examAnswerOptions.value);
 
-    allCategories.value = [
+    // This is used for populating the data for my category stats
+    const allCategories = [
       response.data.category_1,
       response.data.category_2,
       response.data.category_3,
       response.data.category_4,
     ];
 
+    // populating the data for my category stats with the names
+    for (let i = 0; i < allCategories.length; i++) {
+      categoryData.value[i].categoryName = allCategories[i];
+    }
+
+    // Populating the queue of categories
     const divisor = numOfQuestions.value / 4;
-    for (let i = 0; i < allCategories.value.length; i++) {
+    maxLevelConstraint.value = divisor;
+    for (let i = 0; i < allCategories.length; i++) {
       for (let j = 0; j < divisor; j++) {
-        categoryQueue.value.push(allCategories.value[i]);
+        categoryQueue.value.push(allCategories[i]);
       }
     }
 
     // take out the first item since first category was used for first question
     categoryQueue.value.splice(0, 1);
 
+    // shuffle categorie queue
     shuffle(categoryQueue.value);
   } catch (error) {
     console.error("Error fetching exam data:", error);
@@ -68,27 +91,25 @@ onMounted(async () => {
 // When currentQuestionNum changes, get new question based upon level
 watch(currentQuestionNum, async () => {
   if (currentQuestionNum.value <= numOfQuestions.value) {
+
     // getting top category from the queue, basically random category
     currentCategory.value = categoryQueue.value.pop();
+    
     // matching up our random category to a level value to know which level to get along with which category
     let level;
-    if (currentCategory.value == allCategories.value[0]) {
-      level = categoryOneLevel.value;
-    }
-    if (currentCategory.value == allCategories.value[1]) {
-      level = categoryTwoLevel.value;
-    }
-    if (currentCategory.value == allCategories.value[2]) {
-      level = categoryThreeLevel.value;
-    }
-    if (currentCategory.value == allCategories.value[3]) {
-      level = categoryFourLevel.value;
+    const indexOfCurrentCategoryInCategoryStats = categoryData.value.findIndex(
+      (obj) => obj.categoryName === currentCategory.value
+    );
+    if (indexOfCurrentCategoryInCategoryStats !== -1) {
+      const categoryObject = categoryData.value[indexOfCurrentCategoryInCategoryStats];
+      level = categoryObject.categoryLevel;
     }
 
     const exam = route.params.id;
     const response2 = await axios.get(
       `http://localhost:5053/api/Questions/${exam}/${level}/${currentCategory.value}`
-    ); //This is the initial starting question
+    ); 
+    //This is the initial starting question
     examQuestionFromApi.value = response2.data;
 
     // Populate answer options and then shuffle them
@@ -132,60 +153,33 @@ const handleAnswerSubmission = (e) => {
   // With lower and upper limits of questionArray in mind, increase or decrease level
   // based upon correct or incorrect answer
   // Matching up random category (currentCategory)
-  // and syncing it up with our declared categories (eh)
-  // and updating correct level value
-  if (selectedAnswer.value == "correct") {
-    if (
-      currentCategory.value == allCategories.value[0] &&
-      categoryOneLevel.value < 3
-    ) {
-      categoryOneLevel.value++;
-    } else if (
-      currentCategory.value == allCategories.value[1] &&
-      categoryTwoLevel.value < 3
-    ) {
-      categoryTwoLevel.value++;
-    } else if (
-      currentCategory.value == allCategories.value[2] &&
-      categoryThreeLevel.value < 3
-    ) {
-      categoryThreeLevel.value++;
-    } else if (
-      currentCategory.value == allCategories.value[3] &&
-      categoryFourLevel.value < 3
-    ) {
-      categoryFourLevel.value++;
+  // categoryObject is passef with reference.
+
+  const indexOfCurrentCategoryInCategoryStats = categoryData.value.findIndex(
+    (obj) => obj.categoryName === currentCategory.value
+  );
+  if (indexOfCurrentCategoryInCategoryStats !== -1) {
+    const categoryObject = categoryData.value[indexOfCurrentCategoryInCategoryStats];
+    if (selectedAnswer.value === "correct") {
+      if (categoryObject.categoryLevel < maxLevelConstraint.value) {
+        categoryObject.categoryLevel++;
+      }
+      categoryObject.categoryScore++;
+    } else {
+      if (categoryObject.categoryLevel > 1) {
+        categoryObject.categoryLevel--;
+      } 
+      if (categoryObject.categoryScore > 0) {
+        categoryObject.categoryScore--;
+      }
     }
   }
-  if (selectedAnswer.value != "correct") {
-    if (
-      currentCategory.value == allCategories.value[0] &&
-      categoryOneLevel.value > 1
-    ) {
-      categoryOneLevel.value--;
-    } else if (
-      currentCategory.value == allCategories.value[1] &&
-      categoryTwoLevel.value > 1
-    ) {
-      categoryTwoLevel.value--;
-    } else if (
-      currentCategory.value == allCategories.value[2] &&
-      categoryThreeLevel.value > 1
-    ) {
-      categoryThreeLevel.value--;
-    } else if (
-      currentCategory.value == allCategories.value[3] &&
-      categoryFourLevel.value > 1
-    ) {
-      categoryFourLevel.value--;
-    }
-  }
+
   selectedAnswer.value = "";
   currentQuestionNum.value++;
 };
 
 function handleSelectedAnswerChange(newAnswer) {
-  // Do something with the new answer
   selectedAnswer.value = newAnswer;
 }
 </script>
@@ -208,21 +202,15 @@ function handleSelectedAnswerChange(newAnswer) {
         @handle-answer-submission="handleAnswerSubmission"
         @update:selectedAnswer="handleSelectedAnswerChange"
       />
-
       <ExamResult
         v-else
-        :categoryOneLevel="categoryOneLevel"
-        :categoryTwoLevel="categoryTwoLevel"
-        :categoryThreeLevel="categoryThreeLevel"
-        :categoryFourLevel="categoryFourLevel"
-        :allCategories="allCategories"
+        :categoryData="categoryData"
         :allExamData="allExamData"
       />
     </div>
+
     <p class="text-white paragraph-font ml-5">{{ selectedAnswer }}</p>
-    <p class="text-white paragraph-font ml-5">{{ categoryOneLevel }}</p>
-    <p class="text-white paragraph-font ml-5">{{ categoryTwoLevel }}</p>
-    <p class="text-white paragraph-font ml-5">{{ categoryThreeLevel }}</p>
-    <p class="text-white paragraph-font ml-5">{{ categoryFourLevel }}</p>
+    <p class="text-white paragraph-font ml-5">{{ categoryData }}</p>
+
   </main>
 </template>

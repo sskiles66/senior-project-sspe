@@ -4,27 +4,12 @@ import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 
 const props = defineProps({
-  categoryOneLevel: {
-    type: Number,
-    required: true,
-  },
-  categoryTwoLevel: {
-    type: Number,
-    required: true,
-  },
-  categoryThreeLevel: {
-    type: Number,
-    required: true,
-  },
-  categoryFourLevel: {
-    type: Number,
-    required: true,
+  categoryData: {
+    type: Array,
+    required: true
   },
   allExamData: {
     type: Object,
-  },
-  allCategories: {
-    type: Array,
   },
 });
 
@@ -55,14 +40,14 @@ async function handleExamResultSubmission(e) {
         user_id: decodedToken.value.UserId,
         exam_id: props.allExamData.id,
         score:
-          props.categoryOneLevel +
-          props.categoryTwoLevel +
-          props.categoryThreeLevel +
-          props.categoryFourLevel,
-        category_1_score: props.categoryOneLevel,
-        category_2_score: props.categoryTwoLevel,
-        category_3_score: props.categoryThreeLevel,
-        category_4_score: props.categoryFourLevel,
+          props.categoryData[0].categoryScore +
+          props.categoryData[1].categoryScore +
+          props.categoryData[2].categoryScore +
+          props.categoryData[3].categoryScore,
+        category_1_score: props.categoryData[0].categoryScore,
+        category_2_score: props.categoryData[1].categoryScore,
+        category_3_score: props.categoryData[2].categoryScore,
+        category_4_score: props.categoryData[3].categoryScore,
       },
       config
     );
@@ -87,10 +72,10 @@ async function handleExamResultSubmission(e) {
       <h2 class="title-font main-blue-font-color text-2xl my-10">
         Overall Score:
         {{
-          categoryOneLevel +
-          categoryTwoLevel +
-          categoryThreeLevel +
-          categoryFourLevel
+          categoryData[0].categoryScore +
+          categoryData[1].categoryScore +
+          categoryData[2].categoryScore +
+          categoryData[3].categoryScore
         }}
       </h2>
     </div>
@@ -99,16 +84,16 @@ async function handleExamResultSubmission(e) {
         class="category-results card-background-color rounded-lg border border-sky-500 p-5 flex justify-between"
       >
         <h3 class="paragraph-font text-white">
-          {{ allCategories[0] }}: {{ categoryOneLevel }}
+          {{ categoryData[0].categoryName }}: {{ categoryData[0].categoryScore }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ allCategories[1] }}: {{ categoryTwoLevel }}
+          {{ categoryData[1].categoryName }}: {{ categoryData[1].categoryScore }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ allCategories[2] }}: {{ categoryThreeLevel }}
+          {{ categoryData[2].categoryName }}: {{ categoryData[2].categoryScore }}
         </h3>
         <h3 class="paragraph-font text-white">
-          {{ allCategories[3] }}: {{ categoryFourLevel }}
+          {{ categoryData[3].categoryName }}: {{ categoryData[3].categoryScore }}
         </h3>
       </div>
     </div>

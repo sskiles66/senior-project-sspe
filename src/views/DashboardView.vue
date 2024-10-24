@@ -30,7 +30,7 @@ onMounted(async () => {
             <p class="text-white pt-2 ml-5 mr-5 mb-2">{{ exam.category_2 }}</p>
             <p class="text-white pt-2 ml-5 mr-5 mb-2">{{ exam.category_3 }}</p>
             <p class="text-white pt-2 ml-5 mr-5 mb-5">{{ exam.category_4 }}</p>
-            <div class="bg-white p-5 rounded-bl-0 rounded-br-0 rounded-bl rounded-br flex justify-evenly">
+            <div class="bg-white p-5 rounded-bl-0 rounded-br-0 rounded-bl rounded-br flex justify-evenly border border-sky-500">
               <p>Tier: {{ exam.tier }}</p>
               <p># Of Questions: {{ exam.number_of_questions }}</p>
             </div>

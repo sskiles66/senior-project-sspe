@@ -213,14 +213,14 @@ const handleFormSubmit = async (e) => {
           </p>
           <div class="flex items-center justify-between">
             <button
-              class="blue-background-color hover:bg-blue-500 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              class="blue-background-color hover:bg-blue-400 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
               {{ isLoggingIn ? "Log In" : "Create Account" }}
             </button>
             <button
               @click="handleFormChange"
-              class="main-blue-font-color inline-block align-baseline text-sm font-semibold hover:text-indigo-800"
+              class="main-blue-font-color inline-block align-baseline text-sm font-semibold hover:text-blue-400"
               type="button"
             >
               {{ isLoggingIn ? "Create An Account" : "Log In" }}

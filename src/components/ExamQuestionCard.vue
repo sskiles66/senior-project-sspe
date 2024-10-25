@@ -66,7 +66,7 @@ function handleAnswerSubmission(event) {
     </div>
     <button
       @click="handleAnswerSubmission"
-      class="blue-background-color paragraph-font p-4 mt-10 rounded-lg"
+      class="blue-background-color paragraph-font hover:bg-blue-400 p-4 mt-10 rounded-lg"
     >
       Next Question
     </button>

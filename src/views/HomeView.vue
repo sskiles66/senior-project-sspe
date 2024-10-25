@@ -31,7 +31,7 @@ const handleRedirect = () => {
         </div>
       </div>
 
-      <button @click="handleRedirect" class="blue-background-color paragraph-font p-4 mt-10 rounded-lg">See Our Exams</button>
+      <button @click="handleRedirect" class="blue-background-color paragraph-font hover:bg-blue-400 p-4 my-10 rounded-lg">See Our Exams</button>
 
     </div>
   </main>

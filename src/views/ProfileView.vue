@@ -59,7 +59,7 @@ function getAverageScoreOfExams() {
         <div v-if="examResults.length > 0" class="exam-board grid grid-cols-4">
           <div class="exam-board-exams border-r-4 border-sky-500 h-[400px] overflow-y-auto scrollbar">
             <div
-              class="exam border-b-4 border-sky-500 py-5 hover:bg-slate-500"
+              class="exam border-b-4 border-sky-500 py-5 hover:bg-slate-800"
               v-for="(examResult, index) in examResults"
               :key="examResult.id"
               @click="selectedResultIndex = index"

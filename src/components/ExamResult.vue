@@ -110,7 +110,7 @@ async function handleExamResultSubmission(e) {
     </div>
     <button
       @click="handleExamResultSubmission"
-      class="blue-background-color paragraph-font p-4 mt-10 rounded-lg"
+      class="blue-background-color paragraph-font hover:bg-blue-400 p-4 mt-10 rounded-lg"
       :disabled="hasSubmitButtonBeenPressed || !hasToken"
     >
       Submit Exam Result

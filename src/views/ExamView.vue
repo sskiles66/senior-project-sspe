@@ -41,12 +41,12 @@ const maxLevelConstraint = ref();
 onMounted(async () => {
   try {
     const exam = route.params.id;
-    const response = await axios.get(`http://localhost:5053/api/Exams/${exam}`); // Can populate based upon exam info
+    const response = await axios.get(`${import.meta.env.VITE_VUE_APP_API_URL}/api/Exams/${exam}`); // Can populate based upon exam info
     currentCategory.value = response.data.category_1;
     allExamData.value = response.data;
     numOfQuestions.value = response.data.number_of_questions;
     const response2 = await axios.get(
-      `http://localhost:5053/api/Questions/${exam}/1/${response.data.category_1}`
+      `${import.meta.env.VITE_VUE_APP_API_URL}/api/Questions/${exam}/1/${response.data.category_1}`
     ); //This is the initial starting question
 
     examQuestionFromApi.value = response2.data;
@@ -107,7 +107,7 @@ watch(currentQuestionNum, async () => {
 
     const exam = route.params.id;
     const response2 = await axios.get(
-      `http://localhost:5053/api/Questions/${exam}/${level}/${currentCategory.value}`
+      `${import.meta.env.VITE_VUE_APP_API_URL}/api/Questions/${exam}/${level}/${currentCategory.value}`
     ); 
     //This is the initial starting question
     examQuestionFromApi.value = response2.data;
@@ -209,8 +209,9 @@ function handleSelectedAnswerChange(newAnswer) {
       />
     </div>
 
-    <p class="text-white paragraph-font ml-5">{{ selectedAnswer }}</p>
-    <p class="text-white paragraph-font ml-5">{{ categoryData }}</p>
+    <!-- For development -->
+    <!-- <p class="text-white paragraph-font ml-5">{{ selectedAnswer }}</p>
+    <p class="text-white paragraph-font ml-5">{{ categoryData }}</p> -->
 
   </main>
 </template>

@@ -6,7 +6,7 @@ const exams = ref(null);
 
 onMounted(async () => {
   try {
-    const response = await axios.get("http://localhost:5053/api/Exams");
+    const response = await axios.get(`${import.meta.env.VITE_VUE_APP_API_URL}/api/Exams`);
     exams.value = response.data;
   } catch (error) {
     console.error("Error fetching exam data:", error);

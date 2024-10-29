@@ -36,20 +36,20 @@ const handleFormChange = () => {
 const handleFormSubmit = async (e) => {
   e.preventDefault();
   if (isLoggingIn.value) {
-    console.log("logging in ");
+    // console.log("logging in ");
     try {
       const loginUserResponse = await axios.post(
-        `http://localhost:5053/api/Auth`,
+        `${import.meta.env.VITE_VUE_APP_API_URL}/api/Auth`,
         {
           password_hash: passwordInput.value,
           email: emailInput.value,
         }
       );
       if (loginUserResponse.status == 200) {
-        console.log("Success login now generating token");
+        // console.log("Success login now generating token");
         try {
           const createTokenResponse = await axios.post(
-            `http://localhost:5053/api/Auth/${loginUserResponse.data.id}`
+            `${import.meta.env.VITE_VUE_APP_API_URL}/api/Auth/${loginUserResponse.data.id}`
           );
           // console.log(createTokenResponse.data);
           localStorage.setItem("token", createTokenResponse.data);
@@ -91,10 +91,10 @@ const handleFormSubmit = async (e) => {
       }
     }
   } else {
-    console.log("signing up");
+    // console.log("signing up");
     try {
       const createUserResponse = await axios.post(
-        `http://localhost:5053/api/Users`,
+        `${import.meta.env.VITE_VUE_APP_API_URL}/api/Users`,
         {
           password_hash: passwordInput.value,
           name: nameInput.value,
@@ -102,10 +102,10 @@ const handleFormSubmit = async (e) => {
         }
       );
       if (createUserResponse.status == 200) {
-        console.log("Success creation now generating token");
+        // console.log("Success creation now generating token");
         try {
           const createTokenResponse = await axios.post(
-            `http://localhost:5053/api/Auth/${createUserResponse.data.id}`
+            `${import.meta.env.VITE_VUE_APP_API_URL}/api/Auth/${createUserResponse.data.id}`
           );
           // console.log(createTokenResponse.data);
           localStorage.setItem("token", createTokenResponse.data);

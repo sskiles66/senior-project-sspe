@@ -14,7 +14,7 @@ onMounted(async () => {
       headers: { Authorization: `Bearer ${token}` },
     };
     const response = await axios.get(
-      `http://localhost:5053/api/ExamResults/${decodedToken.UserId}`,
+      `${import.meta.env.VITE_VUE_APP_API_URL}/api/ExamResults/${decodedToken.UserId}`,
       config
     ); // placeholder until we have user id
     examResults.value = response.data;

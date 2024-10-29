@@ -36,7 +36,7 @@ async function handleExamResultSubmission(e) {
       headers: { Authorization: `Bearer ${jwt.value}` },
     };
     const createExamResultResponse = await axios.post(
-      `http://localhost:5053/api/ExamResults`,
+      `${import.meta.env.VITE_VUE_APP_API_URL}/api/ExamResults`,
       {
         user_id: decodedToken.value.UserId,
         exam_id: props.allExamData.id,

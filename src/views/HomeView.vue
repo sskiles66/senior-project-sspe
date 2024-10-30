@@ -1,7 +1,7 @@
 <script setup>
 
 const handleRedirect = () => {
-  window.location.href = '/Dashboard';
+  window.location.href = '/Dashboard#/dashboard';
 }
 
 </script>

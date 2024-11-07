@@ -63,7 +63,7 @@ onMounted(async () => {
     let parsedGptQuestion = parseGptResponse(response2.data);
 
     examQuestionFromApi.value = parsedGptQuestion;
-  
+
     setExamAnswerOptions(parsedGptQuestion);
 
     shuffle(examAnswerOptions.value);
@@ -135,7 +135,7 @@ watch(currentQuestionNum, async () => {
     examQuestionFromApi.value = parsedGptQuestion;
 
     // console.log(examQuestionFromApi.value, "on watched after set");
-  
+
     // Populate answer options and then shuffle them
     setExamAnswerOptions(parsedGptQuestion);
     shuffle(examAnswerOptions.value);
@@ -171,14 +171,11 @@ function shuffle(array) {
   }
 }
 
-function parseGptResponse(text){
-    let jsonStartIndex = text.indexOf("{");
-    let jsonEndIndex = text.lastIndexOf("}");
-    let extractedJsonString = text.substring(
-      jsonStartIndex,
-      jsonEndIndex + 1
-    );
-    return JSON.parse(extractedJsonString);
+function parseGptResponse(text) {
+  let jsonStartIndex = text.indexOf("{");
+  let jsonEndIndex = text.lastIndexOf("}");
+  let extractedJsonString = text.substring(jsonStartIndex, jsonEndIndex + 1);
+  return JSON.parse(extractedJsonString);
 }
 
 const handleAnswerSubmission = (e) => {
@@ -228,7 +225,9 @@ function handleSelectedAnswerChange(newAnswer) {
     >
       <!-- Most of the below reactive values are fed in from from the watch hook that triggiers from the handleAnswerSubmission event and the function itself -->
       <!-- : is a shortcut for v-bind -->
-      <LoadingSpinner v-if="!examQuestionFromApi && currentQuestionNum <= numOfQuestions"/>
+      <LoadingSpinner
+        v-if="!examQuestionFromApi && currentQuestionNum <= numOfQuestions"
+      />
       <ExamQuestionCard
         v-else-if="currentQuestionNum <= numOfQuestions"
         :current-question-num="currentQuestionNum"

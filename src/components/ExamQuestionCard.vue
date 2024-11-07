@@ -1,5 +1,9 @@
 <script setup>
-import { defineEmits } from 'vue';
+import { defineEmits, ref } from 'vue';
+import "highlight.js/lib/common"; //not sure how we have this
+import hljsVuePlugin from "@highlightjs/vue-plugin";
+
+const highlightjs = hljsVuePlugin.component;
 
 const props = defineProps({
   currentQuestionNum: {
@@ -45,6 +49,10 @@ function handleAnswerSubmission(event) {
     >
       {{ examQuestionFromApi.question_text }}
     </h2>
+    <highlightjs
+      v-if="examQuestionFromApi.code"
+      :code=examQuestionFromApi.code
+    />
     <hr class="my-4 border border-sky-500" />
     <div v-if="examAnswerOptions" class="quiz-answers flex flex-col space-y-4">
       <label

@@ -49,6 +49,7 @@ async function handleExamResultSubmission(e) {
         category_2_score: props.categoryData[1].categoryScore,
         category_3_score: props.categoryData[2].categoryScore,
         category_4_score: props.categoryData[3].categoryScore,
+        created_at: new Date().toISOString()
       },
       config
     );

@@ -14,7 +14,9 @@ onMounted(async () => {
       headers: { Authorization: `Bearer ${token}` },
     };
     const response = await axios.get(
-      `${import.meta.env.VITE_VUE_APP_API_URL}/api/ExamResults/${decodedToken.UserId}`,
+      `${import.meta.env.VITE_VUE_APP_API_URL}/api/ExamResults/${
+        decodedToken.UserId
+      }`,
       config
     ); // placeholder until we have user id
     examResults.value = response.data;
@@ -28,10 +30,19 @@ function getAverageScoreOfExams() {
   for (let result of examResults.value) {
     sum += result.score;
   }
-  if (sum == 0){
+  if (sum == 0) {
     return 0;
   }
   return (sum / examResults.value.length).toFixed(2);
+}
+
+function formatDate(dateString) {
+  const dtObj = new Date(dateString);
+
+  // Basic formatting:
+  const formattedStr = dtObj.toLocaleString();
+
+  return formattedStr;
 }
 </script>
 
@@ -57,7 +68,9 @@ function getAverageScoreOfExams() {
 
       <div class="exam-board-container">
         <div v-if="examResults.length > 0" class="exam-board grid grid-cols-4">
-          <div class="exam-board-exams border-r-4 border-sky-500 h-[400px] overflow-y-auto scrollbar">
+          <div
+            class="exam-board-exams border-r-4 border-sky-500 h-[400px] overflow-y-auto scrollbar"
+          >
             <div
               class="exam border-b-4 border-sky-500 py-5 hover:bg-slate-800"
               v-for="(examResult, index) in examResults"
@@ -65,7 +78,7 @@ function getAverageScoreOfExams() {
               @click="selectedResultIndex = index"
             >
               <p class="paragraph-font ml-5 mr-5 mb-1 text-white">
-                {{ examResult.name }} / {{ examResult.score }}
+                {{ examResult.name }} / {{ examResult.score }} / {{ formatDate(examResult.created_at) }}
               </p>
             </div>
           </div>

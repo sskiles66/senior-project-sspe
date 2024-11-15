@@ -36,3 +36,9 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #1FC7FF #292929; 
 }
+
+.scrollbar-x {
+  scrollbar-width: thin;
+  scrollbar-color: #1FC7FF #292929; 
+  margin-top: 5px;
+}

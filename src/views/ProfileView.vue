@@ -3,8 +3,11 @@ import { ref, watch, onMounted } from "vue";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
+const nonChangedExamResults = ref();
 const examResults = ref();
 const selectedResultIndex = ref();
+const selectedTimeSortOption = ref('oldest');
+const selectedTierFilterOption = ref('all');
 
 onMounted(async () => {
   try {
@@ -20,8 +23,30 @@ onMounted(async () => {
       config
     ); // placeholder until we have user id
     examResults.value = response.data;
+    nonChangedExamResults.value = response.data;
   } catch (error) {
     console.error("Error fetching exam data:", error);
+  }
+});
+
+watch(selectedTimeSortOption, (newValue) => {
+  if (newValue === 'oldest') {
+    examResults.value = examResults.value.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  } else if (newValue === 'newest') {
+    examResults.value = examResults.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+});
+
+watch(selectedTierFilterOption, (newValue) => {
+  if (newValue === 'all') {
+    examResults.value = nonChangedExamResults.value;
+  } else if (newValue === 'one') {
+    // This is so that examResults is back to normal before filtering again
+    examResults.value = nonChangedExamResults.value;
+    examResults.value = examResults.value.filter(result => result.tier === 1);
+  } else if (newValue === 'two') {
+    examResults.value = nonChangedExamResults.value;
+    examResults.value = examResults.value.filter(result => result.tier === 2);
   }
 });
 
@@ -62,6 +87,15 @@ function formatDate(dateString) {
         <h1 class="main-blue-font-color title-font text-2xl mx-10">
           Average Score: {{ getAverageScoreOfExams() }}
         </h1>
+        <select v-model="selectedTimeSortOption">
+          <option value="oldest">Oldest To Newest</option>
+          <option value="newest">Newest To Oldest</option>
+        </select>
+        <select v-model="selectedTierFilterOption">
+          <option value="all">All</option>
+          <option value="one">Tier 1</option>
+          <option value="two">Tier 2</option>
+        </select>
       </div>
 
       <hr class="border border-sky-500" />
@@ -78,7 +112,8 @@ function formatDate(dateString) {
               @click="selectedResultIndex = index"
             >
               <p class="paragraph-font ml-5 mr-5 mb-1 text-white">
-                {{ examResult.name }} / {{ examResult.score }} / {{ formatDate(examResult.created_at) }}
+                {{ examResult.name }} / {{ examResult.score }} /
+                {{ formatDate(examResult.created_at) }}
               </p>
             </div>
           </div>

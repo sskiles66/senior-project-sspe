@@ -6,8 +6,8 @@ import { jwtDecode } from "jwt-decode";
 const nonChangedExamResults = ref();
 const examResults = ref();
 const selectedResultIndex = ref();
-const selectedTimeSortOption = ref('oldest');
-const selectedTierFilterOption = ref('all');
+const selectedTimeSortOption = ref("oldest");
+const selectedTierFilterOption = ref("all");
 
 onMounted(async () => {
   try {
@@ -30,23 +30,27 @@ onMounted(async () => {
 });
 
 watch(selectedTimeSortOption, (newValue) => {
-  if (newValue === 'oldest') {
-    examResults.value = examResults.value.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-  } else if (newValue === 'newest') {
-    examResults.value = examResults.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  if (newValue === "oldest") {
+    examResults.value = examResults.value.sort(
+      (a, b) => new Date(a.created_at) - new Date(b.created_at)
+    );
+  } else if (newValue === "newest") {
+    examResults.value = examResults.value.sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
   }
 });
 
 watch(selectedTierFilterOption, (newValue) => {
-  if (newValue === 'all') {
+  if (newValue === "all") {
     examResults.value = nonChangedExamResults.value;
-  } else if (newValue === 'one') {
+  } else if (newValue === "one") {
     // This is so that examResults is back to normal before filtering again
     examResults.value = nonChangedExamResults.value;
-    examResults.value = examResults.value.filter(result => result.tier === 1);
-  } else if (newValue === 'two') {
+    examResults.value = examResults.value.filter((result) => result.tier === 1);
+  } else if (newValue === "two") {
     examResults.value = nonChangedExamResults.value;
-    examResults.value = examResults.value.filter(result => result.tier === 2);
+    examResults.value = examResults.value.filter((result) => result.tier === 2);
   }
 });
 
@@ -80,18 +84,26 @@ function formatDate(dateString) {
       class="card-background-color w-10/12 rounded-lg border border-sky-500"
       v-if="examResults"
     >
-      <div class="top-bar flex flex-wrap justify-evenly p-5 rounded-lg">
+      <div
+        class="top-bar flex flex-wrap justify-evenly p-5 rounded-lg items-center"
+      >
         <h1 class="main-blue-font-color title-font text-2xl mx-10">
           Exams Taken: {{ examResults.length }}
         </h1>
         <h1 class="main-blue-font-color title-font text-2xl mx-10">
           Average Score: {{ getAverageScoreOfExams() }}
         </h1>
-        <select v-model="selectedTimeSortOption">
+        <select
+          v-model="selectedTimeSortOption"
+          class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        >
           <option value="oldest">Oldest To Newest</option>
           <option value="newest">Newest To Oldest</option>
         </select>
-        <select v-model="selectedTierFilterOption">
+        <select
+          v-model="selectedTierFilterOption"
+          class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        >
           <option value="all">All</option>
           <option value="one">Tier 1</option>
           <option value="two">Tier 2</option>
@@ -112,9 +124,10 @@ function formatDate(dateString) {
               @click="selectedResultIndex = index"
             >
               <p class="paragraph-font ml-5 mr-5 mb-1 text-white">
-                {{ examResult.name }} / {{ examResult.score }} /
-                {{ formatDate(examResult.created_at) }}
+                {{ examResult.name }}
               </p>
+              <p class="paragraph-font ml-5 mr-5 mb-1 text-white">Score: {{ examResult.score }}</p>
+              <p class="paragraph-font ml-5 mr-5 mb-1 text-white">{{ formatDate(examResult.created_at) }}</p>
             </div>
           </div>
           <div

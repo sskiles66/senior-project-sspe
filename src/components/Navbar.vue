@@ -23,13 +23,13 @@ function logout(){
 
 <template>
   <nav class="navbar">
-    <ul class="navbar-list flex justify-center p-3 bg-gray-800/10">
+    <ul class="navbar-list flex justify-center p-3 bg-gray-800/10 flex-wrap">
       <li class="main-blue-font-color nav-font m-5">
         <router-link to="/">Home</router-link>
       </li>
-      <li class="main-blue-font-color nav-font m-5">
+      <!-- <li class="main-blue-font-color nav-font m-5">
         <router-link to="/about">About</router-link>
-      </li>
+      </li> -->
       <li class="main-blue-font-color nav-font m-5">
         <router-link to="/dashboard">Dashboard</router-link>
       </li>

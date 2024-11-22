@@ -89,7 +89,7 @@ async function handleExamResultSubmission(e) {
     </div>
     <div class="category-results-container">
       <div
-        class="category-results card-background-color rounded-lg border border-sky-500 p-5 flex justify-between"
+        class="category-results card-background-color rounded-lg border border-sky-500 p-5 sm:flex block justify-between"
       >
         <h3 class="paragraph-font text-white">
           {{ categoryData[0].categoryName }}:

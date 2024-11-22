@@ -113,9 +113,9 @@ function formatDate(dateString) {
       <hr class="border border-sky-500" />
 
       <div class="exam-board-container">
-        <div v-if="examResults.length > 0" class="exam-board grid grid-cols-4">
+        <div v-if="examResults.length > 0" class="exam-board grid grid-cols-4 sm:grid-rows-1 grid-rows-2">
           <div
-            class="exam-board-exams border-r-4 border-sky-500 h-[400px] overflow-y-auto scrollbar"
+            class="exam-board-exams border-r-4 border-sky-500 h-[400px] overflow-y-auto scrollbar sm:col-span-1 col-span-4 sm:row-span-1 row-span-2"
           >
             <div
               class="exam border-b-4 border-sky-500 py-5 hover:bg-slate-800"
@@ -131,7 +131,7 @@ function formatDate(dateString) {
             </div>
           </div>
           <div
-            class="exam-board-results col-span-3"
+            class="exam-board-results sm:col-span-3 col-span-4"
             v-if="selectedResultIndex >= 0"
           >
             <h1 class="main-blue-font-color title-font text-2xl mx-10 my-10">

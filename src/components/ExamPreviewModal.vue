@@ -20,7 +20,7 @@ function removeSelectedExam() {
   <div
     class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-75"
   >
-    <div class="relative w-full max-w-md card-background-color rounded-lg shadow-lg">
+    <div class="relative sm:w-full w-5/6 max-w-md card-background-color rounded-lg shadow-lg">
       <div
         class="flex items-start justify-between p-4 border-b border-gray-200 rounded-t"
       >

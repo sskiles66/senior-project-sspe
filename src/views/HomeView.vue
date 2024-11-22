@@ -9,8 +9,8 @@ const handleRedirect = () => {
 <template>
   <main>
     <div class="mt-24 text-center">
-      <h1 class="title-font main-blue-font-color text-6xl">Welcome To The Standardized Software Progress Exam!</h1>
-      <h2 class="title-font text-white mt-12 text-3xl">Begin and grow as a develop while tracking your progress from beginner to expert levels.</h2>
+      <h1 class="title-font main-blue-font-color sm:text-6xl text-5xl mx-5">Welcome To The Standardized Software Progress Exam!</h1>
+      <h2 class="title-font text-white mt-12 sm:text-3xl text-2xl mx-5">Begin and grow as a develop while tracking your progress from beginner to expert levels.</h2>
       
       <div class="cardContainer flex flex-wrap justify-center mt-10">
         <div class="card p-10 m-10 text-left card-background-color rounded-lg border border-sky-500" style="width: 300px;">

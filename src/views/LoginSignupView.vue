@@ -53,7 +53,8 @@ const handleFormSubmit = async (e) => {
           );
           // console.log(createTokenResponse.data);
           localStorage.setItem("token", createTokenResponse.data);
-          window.location.href = "/Profile";
+          window.location.href = "/#/profile";
+          window.location.reload(true);
         } catch (error) {
           console.log(error, "test2");
         }
@@ -109,7 +110,8 @@ const handleFormSubmit = async (e) => {
           );
           // console.log(createTokenResponse.data);
           localStorage.setItem("token", createTokenResponse.data);
-          window.location.href = "/Profile";
+          window.location.href = "/#/profile";
+          window.location.reload(true);
         } catch (error) {
           console.log(error);
         }

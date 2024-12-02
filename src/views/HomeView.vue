@@ -1,7 +1,8 @@
 <script setup>
 
 const handleRedirect = () => {
-  window.location.href = '/Dashboard#/dashboard';
+  window.location.href = '/#/dashboard';
+  window.location.reload(true);
 }
 
 </script>

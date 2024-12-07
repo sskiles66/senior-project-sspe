@@ -27,9 +27,9 @@ function logout(){
       <li class="main-blue-font-color nav-font m-5">
         <router-link to="/">Home</router-link>
       </li>
-      <!-- <li class="main-blue-font-color nav-font m-5">
+      <li class="main-blue-font-color nav-font m-5">
         <router-link to="/about">About</router-link>
-      </li> -->
+      </li>
       <li class="main-blue-font-color nav-font m-5">
         <router-link to="/dashboard">Dashboard</router-link>
       </li>

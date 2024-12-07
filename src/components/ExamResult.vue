@@ -75,9 +75,6 @@ async function handleExamResultSubmission(e) {
     <div class="general-results">
       <h1 class="title-font main-blue-font-color text-4xl">Results</h1>
       <h2 class="title-font main-blue-font-color text-2xl my-10">
-        Time Taken: 45:23
-      </h2>
-      <h2 class="title-font main-blue-font-color text-2xl my-10">
         Overall Score:
         {{
           categoryData[0].categoryScore +

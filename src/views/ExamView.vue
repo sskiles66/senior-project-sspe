@@ -38,6 +38,7 @@ const categoryData = ref([
 ]);
 const allExamData = ref();
 const maxLevelConstraint = ref();
+const env = ref(import.meta.env.VITE_VUE_APP_ENV);
 
 onMounted(async () => {
   try {
@@ -246,7 +247,9 @@ function handleSelectedAnswerChange(newAnswer) {
     </div>
 
     <!-- For development -->
-    <p class="text-white paragraph-font ml-5">{{ selectedAnswer }}</p>
-    <p class="text-white paragraph-font ml-5">{{ categoryData }}</p>
+    <div v-if="env == 'development'">
+      <p class="text-white paragraph-font ml-5">{{ selectedAnswer }}</p>
+      <p class="text-white paragraph-font ml-5">{{ categoryData }}</p>
+    </div>
   </main>
 </template>
